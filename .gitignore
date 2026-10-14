@@ -1,0 +1,32 @@
+# Python virtual environment
+.venv/
+venv/
+ENV/
+
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Environment secrets
+.env
+
+# Database
+instance/
+*.sqlite3
+*.db
+
+# Temporary and upload files
+uploads/
+reports/
+tmp/
+
+# IDE configurations
+.vscode/
+.idea/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/

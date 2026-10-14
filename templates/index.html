@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GOAT AI — AI Resume & Job Match Analyzer</title>
+  <meta name="description" content="AI-powered career assistance platform that parses resumes, analyzes skill alignment against job descriptions, identifies gaps, and provides personalized learning roadmaps.">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐐</text></svg>">
+</head>
+<body>
+
+  <!-- Subtle Animated Background Grid -->
+  <div class="bg-grid-pattern" aria-hidden="true"></div>
+
+  <!-- Header & Navigation -->
+  <header class="site-header">
+    <div class="container nav-wrap">
+      <a href="/" class="brand-logo" id="brandLogo">
+        <span class="brand-icon-crown">🐐</span>
+        <span>GOAT <span class="brand-gradient">AI</span></span>
+        <span class="brand-badge">PRO v2.0</span>
+      </a>
+
+      <nav class="nav-links">
+        <a href="#analyzer" class="nav-link">Analyzer</a>
+        <a href="#howItWorks" class="nav-link">How it Works</a>
+        <button id="openHistoryBtn" class="btn-nav-action" type="button">
+          <span>📜</span> History
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <main class="container">
+    <section class="hero-section">
+      <div class="hero-pill">
+        <span class="hero-pill-dot"></span>
+        Next-Gen Career Intelligence
+      </div>
+      <h1 class="hero-title">
+        Bridging the Gap Between Your <br>
+        <span class="brand-gradient">Resume & Dream Job.</span>
+      </h1>
+      <p class="hero-subtitle">
+        Upload your PDF or Word resume, compare it against any job description, and get an explainable match score, missing skill breakdown, and a tailored learning roadmap.
+      </p>
+
+      <div class="hero-stats-row">
+        <div class="stat-item">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          <span>Transparent NLP Matching</span>
+        </div>
+        <div class="stat-item">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+          <span>85% Verification Benchmark</span>
+        </div>
+        <div class="stat-item">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+          <span>Personalized Roadmap</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main Analyzer Card -->
+    <section class="glass-panel" id="analyzer">
+      <div class="panel-header-wrap">
+        <div>
+          <h2 class="panel-title">
+            <span>⚡</span> Intelligent Match Analyzer
+          </h2>
+          <p class="panel-subtitle">Upload your resume or paste content alongside the target job requirements</p>
+        </div>
+      </div>
+
+      <form id="analyzeForm" enctype="multipart/form-data">
+        <div class="analyzer-form-grid">
+          
+          <!-- Left Column: Resume Input -->
+          <div class="input-column">
+            <div class="toggle-tab-group">
+              <button type="button" class="tab-btn active" id="tabUpload">📎 Upload Document</button>
+              <button type="button" class="tab-btn" id="tabText">📝 Paste Text</button>
+            </div>
+
+            <!-- Upload Container -->
+            <div id="uploadContainer">
+              <label class="form-label">Resume Document (PDF or DOCX)</label>
+              <div class="upload-dropzone" id="dropzone">
+                <input type="file" id="resumeFile" name="resume_file" class="file-input-hidden" accept=".pdf,.docx">
+                <div class="dropzone-icon">
+                  <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                </div>
+                <div class="dropzone-text-primary">Drag & drop your resume file here</div>
+                <div class="dropzone-text-secondary">Supports PDF, DOCX (Max 5MB)</div>
+              </div>
+
+              <!-- Selected File Preview -->
+              <div class="selected-file-card" id="selectedFileCard">
+                <div class="file-meta-info">
+                  <span style="font-size: 1.5rem;">📄</span>
+                  <div>
+                    <div class="file-name-text" id="fileName">resume.pdf</div>
+                    <div class="file-size-text" id="fileSize">140 KB</div>
+                  </div>
+                </div>
+                <button type="button" class="btn-remove-file" id="removeFileBtn" title="Remove file">✕</button>
+              </div>
+
+              <!-- Quick Sample Resumes for Instant Testing -->
+              <div class="quick-samples-bar" style="margin-top: 16px;">
+                <span style="font-size: 0.75rem; color: var(--text-muted);">Quick fill resume:</span>
+                <button type="button" class="quick-sample-tag sample-resume-btn" data-tier="high">High Match Sample (85%+)</button>
+                <button type="button" class="quick-sample-tag sample-resume-btn" data-tier="low">Junior / Gaps Sample</button>
+              </div>
+            </div>
+
+            <!-- Text Container (Hidden by default) -->
+            <div id="textContainer" style="display: none;">
+              <label for="resumeText" class="form-label">Paste Resume Content</label>
+              <textarea id="resumeText" name="resume_text" class="form-textarea" placeholder="Paste your resume sections, skills, work experience, and projects here..."></textarea>
+            </div>
+          </div>
+
+          <!-- Right Column: Job Description & Target Role -->
+          <div class="input-column">
+            <div class="role-select-wrap">
+              <label for="targetRole" class="form-label">Target Role Category</label>
+              <select id="targetRole" name="target_role" class="custom-select">
+                <option value="Software Engineer">Software Engineer / Backend Developer</option>
+                <option value="Full Stack Developer">Full Stack Developer</option>
+                <option value="Data Scientist">Data Scientist / Machine Learning</option>
+                <option value="Data Analyst">Data Analyst / Business Intelligence</option>
+                <option value="Cloud & DevOps Engineer">Cloud & DevOps Engineer</option>
+                <option value="Custom / Other">General Tech / Other</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="jobDescription" class="form-label">Job Description / Requirements</label>
+              <textarea id="jobDescription" name="job_description" class="form-textarea" placeholder="Paste the complete job description, required technical qualifications, frameworks, and responsibilities..."></textarea>
+
+              <div class="quick-samples-bar">
+                <span style="font-size: 0.75rem; color: var(--text-muted);">Load sample job:</span>
+                <button type="button" class="quick-sample-tag sample-job-btn" data-role="swe">Software Engineer</button>
+                <button type="button" class="quick-sample-tag sample-job-btn" data-role="data">Data Analyst</button>
+                <button type="button" class="quick-sample-tag sample-job-btn" data-role="devops">DevOps Engineer</button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Action Banner -->
+        <div class="action-banner">
+          <button type="button" id="analyzeBtn" class="btn-primary-glow">
+            <span>🚀 Run Deep Match Analysis</span>
+          </button>
+          <div class="security-badge-note">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+            <span>Privacy Assured: Resumes are processed in memory and not stored permanently.</span>
+          </div>
+        </div>
+      </form>
+    </section>
+
+    <!-- Results Section -->
+    <section class="results-section" id="resultsSection" aria-live="polite">
+      
+      <!-- Top Overview Grid -->
+      <div class="overview-card-grid">
+        
+        <!-- Circular Score Widget -->
+        <div class="glass-panel score-card">
+          <div class="circular-score-wrapper">
+            <svg viewBox="0 0 180 180">
+              <defs>
+                <linearGradient id="scoreGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#38bdf8" />
+                  <stop offset="50%" stop-color="#818cf8" />
+                  <stop offset="100%" stop-color="#c084fc" />
+                </linearGradient>
+              </defs>
+              <circle class="score-circle-bg" cx="90" cy="90" r="80" />
+              <circle class="score-circle-progress" id="scoreCircle" cx="90" cy="90" r="80" />
+            </svg>
+            <div class="score-inner-text">
+              <div class="score-number" id="scoreNumber">0%</div>
+              <div class="score-label">Match Score</div>
+            </div>
+          </div>
+
+          <div id="statusBadge" class="status-badge not-verified">
+            Calculating...
+          </div>
+        </div>
+
+        <!-- Metric Breakdown & Status Explanation -->
+        <div class="glass-panel breakdown-card">
+          <div>
+            <div class="breakdown-header">
+              <div>
+                <h3 style="font-size: 1.35rem; font-family: var(--font-heading);">Match Assessment Overview</h3>
+                <p style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 2px;">
+                  Calculated using transparent NLP skill extraction and contextual similarity
+                </p>
+              </div>
+            </div>
+
+            <div class="metric-boxes-grid">
+              <div class="metric-box">
+                <div class="metric-box-val text-emerald" id="matchedCount">0</div>
+                <div class="metric-box-lbl">Matched Skills</div>
+              </div>
+              <div class="metric-box">
+                <div class="metric-box-val text-rose" id="missingCount">0</div>
+                <div class="metric-box-lbl">Missing Skills</div>
+              </div>
+              <div class="metric-box">
+                <div class="metric-box-val text-indigo" id="totalRequired">0</div>
+                <div class="metric-box-lbl">Job Skills Found</div>
+              </div>
+            </div>
+
+            <div class="explanation-alert-box" id="scoreExplanation">
+              Loading match analysis explanation...
+            </div>
+          </div>
+
+          <div class="explanation-disclaimer">
+            ℹ️ <strong>System Note:</strong> The 85% "Verified" badge is an internal algorithmic benchmark reflecting high alignment with recognized job keywords. It does <em>not</em> authenticate your legal identity, academic certificates, or employment history, nor does it guarantee hiring success.
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Skills Detail Cloud -->
+      <div class="skills-details-grid">
+        <!-- Matched Skills -->
+        <div class="glass-panel">
+          <div style="display: flex; align-items: center; justify-content: space-between;">
+            <h4 style="font-size: 1.15rem; color: #34d399; display: flex; align-items: center; gap: 8px;">
+              <span>✅</span> Matched Capabilities
+            </h4>
+            <span style="font-size: 0.78rem; color: var(--text-muted);">Found in your resume</span>
+          </div>
+          <div class="skill-tag-cloud" id="matchedSkillsList">
+            <!-- Dynamically injected -->
+          </div>
+        </div>
+
+        <!-- Missing Skills -->
+        <div class="glass-panel">
+          <div style="display: flex; align-items: center; justify-content: space-between;">
+            <h4 style="font-size: 1.15rem; color: #f87171; display: flex; align-items: center; gap: 8px;">
+              <span>🎯</span> Missing Skills & Keywords
+            </h4>
+            <span style="font-size: 0.78rem; color: var(--text-muted);">Required by employer</span>
+          </div>
+          <div class="skill-tag-cloud" id="missingSkillsList">
+            <!-- Dynamically injected -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Personalized Learning Roadmap -->
+      <div class="glass-panel roadmap-section-wrap">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+          <h4 style="font-size: 1.25rem; font-family: var(--font-heading); display: flex; align-items: center; gap: 8px;">
+            <span>🗺️</span> Personalized Skill Acceleration Roadmap
+          </h4>
+          <span style="font-size: 0.78rem; color: #818cf8;">Targeted for your missing gaps</span>
+        </div>
+        <p style="color: var(--text-secondary); font-size: 0.86rem; margin-bottom: 12px;">
+          Master these topics sequentially to qualify for this job role and build defensible portfolio projects:
+        </p>
+
+        <div class="roadmap-levels-grid" id="roadmapLevelsGrid">
+          <!-- Dynamically injected beginner, intermediate, advanced cards -->
+        </div>
+      </div>
+
+      <!-- Resume Improvement Suggestions -->
+      <div class="glass-panel">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+          <h4 style="font-size: 1.25rem; font-family: var(--font-heading); display: flex; align-items: center; gap: 8px;">
+            <span>✨</span> Bullet Point Enhancement Recommendations
+          </h4>
+          <span style="font-size: 0.78rem; color: #c084fc;">Action-Oriented Rewrites</span>
+        </div>
+        <p style="color: var(--text-secondary); font-size: 0.86rem;">
+          Transform passive statements into high-impact, verifiable bullet points without exaggerating your experience:
+        </p>
+
+        <div class="suggestions-grid" id="suggestionsContainer">
+          <!-- Dynamically injected suggestions -->
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="results-action-bar">
+        <button type="button" class="btn-secondary" id="downloadReportBtn">
+          <span>📥 Download PDF Report</span>
+        </button>
+        <a href="#analyzer" class="btn-secondary" onclick="window.scrollTo({top: 0, behavior: 'smooth'});">
+          <span>🔄 Analyze Another Role</span>
+        </a>
+      </div>
+
+    </section>
+
+    <!-- How It Works Section -->
+    <section class="glass-panel" id="howItWorks" style="margin-top: 48px;">
+      <h3 style="font-size: 1.35rem; font-family: var(--font-heading); margin-bottom: 16px; text-align: center;">
+        How GOAT AI Evaluates Your Profile
+      </h3>
+      <div class="roadmap-levels-grid" style="margin-top: 0;">
+        <div class="roadmap-level-card">
+          <h4 style="color: #38bdf8; margin-bottom: 8px;">1. Multi-Format Extraction</h4>
+          <p style="color: var(--text-secondary); font-size: 0.85rem; line-height: 1.6;">
+            Extracts raw textual hierarchy from PDF and DOCX files safely without executing untrusted macros or leaking personal information.
+          </p>
+        </div>
+        <div class="roadmap-level-card">
+          <h4 style="color: #818cf8; margin-bottom: 8px;">2. Semantic Skill Overlap</h4>
+          <p style="color: var(--text-secondary); font-size: 0.85rem; line-height: 1.6;">
+            Applies natural language tokenization and exact + contextual matching across 250+ tech stacks, libraries, tools, and soft skills.
+          </p>
+        </div>
+        <div class="roadmap-level-card">
+          <h4 style="color: #c084fc; margin-bottom: 8px;">3. Explainable Roadmapping</h4>
+          <p style="color: var(--text-secondary); font-size: 0.85rem; line-height: 1.6;">
+            Maps absent requirements to concrete curriculum tiers (beginner to advanced) and provides real-world portfolio project ideas.
+          </p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- History Modal -->
+  <div class="modal-backdrop" id="historyModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 style="font-family: var(--font-heading); font-size: 1.25rem;">Analysis History</h3>
+        <button type="button" class="btn-close-modal" id="closeHistoryBtn">&times;</button>
+      </div>
+      <div id="historyListContainer">
+        <!-- Records loaded via fetch -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading Animation Overlay -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="spinner-glow"></div>
+    <div class="loading-text">Analyzing Profile & Matching Requirements</div>
+    <div class="loading-subtext">Parsing documents, extracting skills, and generating recommendations...</div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-links">
+        <a href="#analyzer">Analyzer</a>
+        <a href="#howItWorks">Architecture</a>
+        <a href="https://github.com" target="_blank" rel="noopener">GitHub</a>
+      </div>
+      <p>
+        GOAT AI — Professional Resume & Job Match Intelligence System © 2026. Built for ambitious engineers and job seekers.
+      </p>
+    </div>
+  </footer>
+
+  <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
