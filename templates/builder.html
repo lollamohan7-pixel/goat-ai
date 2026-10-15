@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GOAT AI — Professional Resume Builder</title>
+  <meta name="description" content="Build an ATS-optimized, high-impact resume with real-time live preview, dual professional layouts, and instant PDF download.">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐐</text></svg>">
+</head>
+<body class="builder-body">
+
+  <!-- Background Grid Pattern -->
+  <div class="bg-grid-pattern" aria-hidden="true"></div>
+
+  <!-- Header & Navigation -->
+  <header class="site-header">
+    <div class="container nav-wrap">
+      <a href="/" class="brand-logo" id="brandLogo">
+        <span class="brand-icon-crown">🐐</span>
+        <span>GOAT <span class="brand-gradient">AI</span></span>
+        <span class="brand-badge">STUDIO</span>
+      </a>
+
+      <nav class="nav-links">
+        <a href="/" class="nav-link">Analyzer</a>
+        <a href="/builder" class="nav-link active">Resume Builder</a>
+        <a href="/#howItWorks" class="nav-link">How it Works</a>
+        <a href="/" class="btn-nav-action" style="text-decoration: none;">
+          <span>⚡</span> Match Analyzer
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Studio Main Container -->
+  <main class="builder-main-container">
+    
+    <!-- Top Action / Control Bar -->
+    <section class="builder-control-bar glass-panel">
+      <div class="control-bar-left">
+        <div class="hero-pill" style="margin-bottom: 0;">
+          <span class="hero-pill-dot"></span>
+          ATS Studio Engine
+        </div>
+        <div>
+          <h1 class="builder-title">Professional Resume Builder</h1>
+          <p class="builder-desc">Live preview updates automatically as you type. Formatted for high ATS parseability.</p>
+        </div>
+      </div>
+
+      <div class="control-bar-actions">
+        <!-- Template Style Selector -->
+        <div class="template-selector-group" role="group" aria-label="Resume Template Selection">
+          <button type="button" class="btn-template active" id="templateModernBtn" data-template="modern">
+            <span>✨</span> Modern Minimalist
+          </button>
+          <button type="button" class="btn-template" id="templateClassicBtn" data-template="classic">
+            <span>📄</span> Classic ATS
+          </button>
+        </div>
+
+        <!-- Action Utility Buttons -->
+        <div class="utility-buttons-group">
+          <button type="button" class="btn-secondary" id="prefillSampleBtn" title="Load sample full-stack engineer data">
+            <span>⚡ Load Sample Data</span>
+          </button>
+          <button type="button" class="btn-secondary" id="analyzeMatchBtn" title="Compare this resume with a target job description in GOAT AI">
+            <span>🎯 Match with Job</span>
+          </button>
+          <button type="button" class="btn-secondary" id="resetFormBtn" title="Clear all fields">
+            <span>🗑️ Clear</span>
+          </button>
+          <button type="button" class="btn-primary-glow" id="downloadPdfBtn">
+            <span>📥 Download PDF</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Mobile Viewport Tab Switcher -->
+    <div class="builder-mobile-tabs" id="mobileTabSwitcher" role="tablist">
+      <button type="button" class="mobile-tab-btn active" id="tabBtnEditor" role="tab" aria-selected="true">
+        <span>✏️</span> Edit Form
+      </button>
+      <button type="button" class="mobile-tab-btn" id="tabBtnPreview" role="tab" aria-selected="false">
+        <span>👁️</span> Live Preview
+      </button>
+    </div>
+
+    <!-- Alert Banner for Errors or Feedback -->
+    <div id="builderAlertBanner" class="builder-alert-banner" style="display: none;" role="alert"></div>
+
+    <!-- Two-Column Studio Workspace -->
+    <div class="builder-studio-grid">
+      
+      <!-- ====================================================================
+           Left Column: Guided Resume Form
+           ==================================================================== -->
+      <section class="builder-form-pane" id="builderFormPane" aria-label="Resume Form Sections">
+        <form id="resumeBuilderForm" autocomplete="off" onsubmit="return false;">
+          
+          <!-- 1. Personal & Contact Details -->
+          <div class="form-section-card glass-panel">
+            <div class="section-card-header">
+              <div class="section-icon">👤</div>
+              <div>
+                <h2 class="section-card-title">Personal & Contact Details</h2>
+                <p class="section-card-sub">Your contact information and professional links</p>
+              </div>
+            </div>
+
+            <div class="form-grid-2col">
+              <div class="form-field-group">
+                <label for="fullName" class="form-label required-label">Full Name</label>
+                <input type="text" id="fullName" class="form-input" placeholder="e.g. Jordan Hayes" required>
+              </div>
+              <div class="form-field-group">
+                <label for="headline" class="form-label">Professional Headline</label>
+                <input type="text" id="headline" class="form-input" placeholder="e.g. Lead Full Stack Software Engineer">
+              </div>
+            </div>
+
+            <div class="form-grid-3col">
+              <div class="form-field-group">
+                <label for="email" class="form-label required-label">Email Address</label>
+                <input type="email" id="email" class="form-input" placeholder="jordan@example.com" required>
+              </div>
+              <div class="form-field-group">
+                <label for="phone" class="form-label">Phone Number</label>
+                <input type="tel" id="phone" class="form-input" placeholder="+1 (555) 349-2819">
+              </div>
+              <div class="form-field-group">
+                <label for="location" class="form-label">City, Country</label>
+                <input type="text" id="location" class="form-input" placeholder="San Francisco, CA">
+              </div>
+            </div>
+
+            <div class="form-grid-3col">
+              <div class="form-field-group">
+                <label for="linkedin" class="form-label">LinkedIn URL</label>
+                <input type="text" id="linkedin" class="form-input" placeholder="linkedin.com/in/jordanhayes">
+              </div>
+              <div class="form-field-group">
+                <label for="github" class="form-label">GitHub URL</label>
+                <input type="text" id="github" class="form-input" placeholder="github.com/jordanhayes">
+              </div>
+              <div class="form-field-group">
+                <label for="portfolio" class="form-label">Portfolio / Website</label>
+                <input type="text" id="portfolio" class="form-input" placeholder="jordanhayes.dev">
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. Professional Summary -->
+          <div class="form-section-card glass-panel">
+            <div class="section-card-header">
+              <div class="section-icon">✍️</div>
+              <div>
+                <h2 class="section-card-title">Professional Summary</h2>
+                <p class="section-card-sub">2–4 impactful sentences summarizing your key expertise, years of experience, and value</p>
+              </div>
+            </div>
+
+            <div class="form-field-group">
+              <label for="summary" class="form-label">Summary Statement</label>
+              <textarea id="summary" class="form-textarea" rows="3" placeholder="Full Stack Engineer with 6+ years of experience designing high-throughput distributed systems and responsive user interfaces..."></textarea>
+            </div>
+          </div>
+
+          <!-- 3. Technical Skills -->
+          <div class="form-section-card glass-panel">
+            <div class="section-card-header">
+              <div class="section-icon">🛠️</div>
+              <div>
+                <h2 class="section-card-title">Technical Skills</h2>
+                <p class="section-card-sub">Group your core proficiencies for clear ATS classification</p>
+              </div>
+            </div>
+
+            <div class="form-grid-2col">
+              <div class="form-field-group">
+                <label for="skillsLanguages" class="form-label">Programming Languages</label>
+                <input type="text" id="skillsLanguages" class="form-input" placeholder="Python, TypeScript, Go, SQL, Bash">
+              </div>
+              <div class="form-field-group">
+                <label for="skillsFrameworks" class="form-label">Frameworks & Libraries</label>
+                <input type="text" id="skillsFrameworks" class="form-input" placeholder="Flask, FastAPI, React, Node.js, Next.js">
+              </div>
+            </div>
+
+            <div class="form-grid-2col">
+              <div class="form-field-group">
+                <label for="skillsTools" class="form-label">Cloud & Developer Tools</label>
+                <input type="text" id="skillsTools" class="form-input" placeholder="Docker, Kubernetes, AWS, Terraform, Git, CI/CD">
+              </div>
+              <div class="form-field-group">
+                <label for="skillsDatabases" class="form-label">Databases & Storage</label>
+                <input type="text" id="skillsDatabases" class="form-input" placeholder="PostgreSQL, Redis, DynamoDB, MongoDB">
+              </div>
+            </div>
+          </div>
+
+          <!-- 4. Work Experience & Internships -->
+          <div class="form-section-card glass-panel">
+            <div class="section-card-header" style="justify-content: space-between;">
+              <div style="display: flex; gap: 12px; align-items: center;">
+                <div class="section-icon">💼</div>
+                <div>
+                  <h2 class="section-card-title">Work Experience & Internships</h2>
+                  <p class="section-card-sub">Prior employment, responsibilities, and quantified achievements</p>
+                </div>
+              </div>
+              <button type="button" class="btn-add-entry" id="addExperienceBtn">
+                <span>+ Add Experience</span>
+              </button>
+            </div>
+
+            <div id="experienceListContainer" class="dynamic-entries-list">
+              <!-- Dynamically populated entries -->
+            </div>
+          </div>
+
+          <!-- 5. Education -->
+          <div class="form-section-card glass-panel">
+            <div class="section-card-header" style="justify-content: space-between;">
+              <div style="display: flex; gap: 12px; align-items: center;">
+                <div class="section-icon">🎓</div>
+                <div>
+                  <h2 class="section-card-title">Education</h2>
+                  <p class="section-card-sub">Degrees, academic institutions, and distinctions</p>
+                </div>
+              </div>
+              <button type="button" class="btn-add-entry" id="addEducationBtn">
+                <span>+ Add Education</span>
+              </button>
+            </div>
+
+            <div id="educationListContainer" class="dynamic-entries-list">
+              <!-- Dynamically populated entries -->
+            </div>
+          </div>
+
+          <!-- 6. Key Projects -->
+          <div class="form-section-card glass-panel">
+            <div class="section-card-header" style="justify-content: space-between;">
+              <div style="display: flex; gap: 12px; align-items: center;">
+                <div class="section-icon">🚀</div>
+                <div>
+                  <h2 class="section-card-title">Projects</h2>
+                  <p class="section-card-sub">Technical portfolio projects showcasing real-world implementation</p>
+                </div>
+              </div>
+              <button type="button" class="btn-add-entry" id="addProjectBtn">
+                <span>+ Add Project</span>
+              </button>
+            </div>
+
+            <div id="projectsListContainer" class="dynamic-entries-list">
+              <!-- Dynamically populated entries -->
+            </div>
+          </div>
+
+          <!-- 7. Certifications -->
+          <div class="form-section-card glass-panel">
+            <div class="section-card-header" style="justify-content: space-between;">
+              <div style="display: flex; gap: 12px; align-items: center;">
+                <div class="section-icon">📜</div>
+                <div>
+                  <h2 class="section-card-title">Certifications</h2>
+                  <p class="section-card-sub">Industry credentials and verified qualifications</p>
+                </div>
+              </div>
+              <button type="button" class="btn-add-entry" id="addCertificationBtn">
+                <span>+ Add Certification</span>
+              </button>
+            </div>
+
+            <div id="certificationsListContainer" class="dynamic-entries-list">
+              <!-- Dynamically populated entries -->
+            </div>
+          </div>
+
+          <!-- 8. Achievements & Honors -->
+          <div class="form-section-card glass-panel">
+            <div class="section-card-header">
+              <div class="section-icon">🏆</div>
+              <div>
+                <h2 class="section-card-title">Achievements & Honors</h2>
+                <p class="section-card-sub">Hackathons, awards, speaking engagements, or publications (one bullet per line)</p>
+              </div>
+            </div>
+
+            <div class="form-field-group">
+              <label for="achievements" class="form-label">Key Achievements</label>
+              <textarea id="achievements" class="form-textarea" rows="3" placeholder="Winner — Austin Cloud Hackathon 2021 (Top 1% out of 250 teams)&#10;Speaker at PyTexas 2023 on Microservices Optimization"></textarea>
+            </div>
+          </div>
+
+          <!-- 9. Languages -->
+          <div class="form-section-card glass-panel">
+            <div class="section-card-header" style="justify-content: space-between;">
+              <div style="display: flex; gap: 12px; align-items: center;">
+                <div class="section-icon">🌐</div>
+                <div>
+                  <h2 class="section-card-title">Languages</h2>
+                  <p class="section-card-sub">Languages spoken and professional proficiency levels</p>
+                </div>
+              </div>
+              <button type="button" class="btn-add-entry" id="addLanguageBtn">
+                <span>+ Add Language</span>
+              </button>
+            </div>
+
+            <div id="languagesListContainer" class="dynamic-entries-list">
+              <!-- Dynamically populated entries -->
+            </div>
+          </div>
+
+        </form>
+      </section>
+
+      <!-- ====================================================================
+           Right Column: Live Resume Preview
+           ==================================================================== -->
+      <section class="builder-preview-pane" id="builderPreviewPane" aria-label="Live Resume Preview">
+        
+        <div class="preview-sticky-wrap glass-panel preview-frame-panel">
+          <div class="preview-panel-header">
+            <div class="preview-header-left">
+              <div class="preview-icon">👁️</div>
+              <div>
+                <h3 class="preview-panel-title">Live Resume Preview</h3>
+                <div class="live-status-pill">
+                  <span class="live-dot"></span>
+                  <span>Live Synchronized</span>
+                </div>
+              </div>
+            </div>
+            <div class="preview-header-right">
+              <div class="preview-layout-indicator" id="previewLayoutIndicator">
+                Layout: <strong>Modern Minimalist</strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- Virtual Paper Preview Sheet Viewport -->
+          <div class="preview-sheet-viewport">
+            <article class="resume-paper-sheet style-modern" id="resumePaperSheet" aria-label="Resume Document Preview">
+              
+              <!-- Header Section -->
+              <header class="rp-header">
+                <h1 class="rp-name" id="rpName">Your Name</h1>
+                <div class="rp-headline" id="rpHeadline"></div>
+                <div class="rp-contact" id="rpContact"></div>
+                <div class="rp-divider-primary"></div>
+              </header>
+
+              <!-- Professional Summary -->
+              <section class="rp-section" id="rpSectionSummary">
+                <h2 class="rp-section-heading">PROFESSIONAL SUMMARY</h2>
+                <div class="rp-divider-secondary"></div>
+                <p class="rp-summary-text" id="rpSummary"></p>
+              </section>
+
+              <!-- Technical Skills -->
+              <section class="rp-section" id="rpSectionSkills">
+                <h2 class="rp-section-heading">TECHNICAL SKILLS</h2>
+                <div class="rp-divider-secondary"></div>
+                <div class="rp-skills-list" id="rpSkills"></div>
+              </section>
+
+              <!-- Experience -->
+              <section class="rp-section" id="rpSectionExperience">
+                <h2 class="rp-section-heading" id="rpExpHeading">EXPERIENCE & INTERNSHIPS</h2>
+                <div class="rp-divider-secondary"></div>
+                <div class="rp-entries-container" id="rpExperience"></div>
+              </section>
+
+              <!-- Projects -->
+              <section class="rp-section" id="rpSectionProjects">
+                <h2 class="rp-section-heading">KEY PROJECTS</h2>
+                <div class="rp-divider-secondary"></div>
+                <div class="rp-entries-container" id="rpProjects"></div>
+              </section>
+
+              <!-- Education -->
+              <section class="rp-section" id="rpSectionEducation">
+                <h2 class="rp-section-heading">EDUCATION</h2>
+                <div class="rp-divider-secondary"></div>
+                <div class="rp-entries-container" id="rpEducation"></div>
+              </section>
+
+              <!-- Certifications -->
+              <section class="rp-section" id="rpSectionCertifications">
+                <h2 class="rp-section-heading">CERTIFICATIONS</h2>
+                <div class="rp-divider-secondary"></div>
+                <div class="rp-entries-container" id="rpCertifications"></div>
+              </section>
+
+              <!-- Achievements -->
+              <section class="rp-section" id="rpSectionAchievements">
+                <h2 class="rp-section-heading">HONORS & ACHIEVEMENTS</h2>
+                <div class="rp-divider-secondary"></div>
+                <ul class="rp-bullet-list" id="rpAchievements"></ul>
+              </section>
+
+              <!-- Languages -->
+              <section class="rp-section" id="rpSectionLanguages">
+                <h2 class="rp-section-heading">LANGUAGES</h2>
+                <div class="rp-divider-secondary"></div>
+                <p class="rp-languages-text" id="rpLanguages"></p>
+              </section>
+
+            </article>
+          </div>
+        </div>
+
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-links">
+        <a href="/">Analyzer</a>
+        <a href="/builder">Resume Builder</a>
+        <a href="/#howItWorks">Architecture</a>
+        <a href="https://github.com" target="_blank" rel="noopener">GitHub</a>
+      </div>
+      <p>
+        GOAT AI — Professional Resume & Job Match Intelligence System © 2026. Built for ambitious engineers and job seekers.
+      </p>
+    </div>
+  </footer>
+
+  <script src="{{ url_for('static', filename='js/builder.js') }}"></script>
+</body>
+</html>

@@ -107,6 +107,25 @@ Projects: Simple personal portfolio page hosted on GitHub Pages.`
   tabUpload?.addEventListener('click', () => switchTab('file'));
   tabText?.addEventListener('click', () => switchTab('text'));
 
+  // Bridge: Auto-load resume if forwarded from Resume Builder studio
+  try {
+    const builderResumeText = sessionStorage.getItem('goat_builder_resume_text');
+    if (builderResumeText) {
+      sessionStorage.removeItem('goat_builder_resume_text');
+      switchTab('text');
+      if (resumeTextInput) {
+        resumeTextInput.value = builderResumeText;
+        resumeTextInput.dispatchEvent(new Event('input'));
+      }
+      setTimeout(() => {
+        const analyzerEl = document.getElementById('analyzer');
+        if (analyzerEl) {
+          analyzerEl.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 150);
+    }
+  } catch (_) {}
+
   // File Upload & Drag-and-Drop Handling
   ['dragenter', 'dragover'].forEach(evt => {
     dropzone.addEventListener(evt, (e) => {

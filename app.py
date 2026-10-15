@@ -5,6 +5,7 @@ Main Flask Application Server
 
 import os
 import json
+import re
 from flask import Flask, render_template, request, jsonify, send_file
 from dotenv import load_dotenv
 
@@ -15,6 +16,7 @@ from services.resume_parser import extract_resume_text, ResumeParserError
 from services.matching_engine import analyze_match
 from services.recommendations import get_recommendations_and_roadmap
 from services.report_generator import generate_pdf_report
+from services.resume_builder_pdf import generate_resume_pdf
 from database.db import init_db, save_analysis, get_analysis_by_id, get_recent_history
 
 app = Flask(__name__)
@@ -29,6 +31,12 @@ init_db()
 def index():
     """Render the primary landing page and analyzer dashboard."""
     return render_template('index.html')
+
+
+@app.route('/builder')
+def resume_builder():
+    """Render the guided resume builder interface."""
+    return render_template('builder.html')
 
 
 @app.route('/api/analyze', methods=['POST'])
@@ -154,6 +162,66 @@ def download_report(analysis_id):
         )
     except Exception as e:
         return jsonify({'error': f'Failed to generate report: {str(e)}'}), 500
+
+
+@app.route('/api/builder/download-pdf', methods=['POST'])
+def api_builder_download_pdf():
+    """
+    Generate and stream an ATS-friendly PDF resume from submitted resume data.
+    Validates payload structure and ensures privacy (no persistence of full text).
+    """
+    try:
+        data = request.get_json(silent=True)
+        if data is None or not isinstance(data, dict):
+            return jsonify({'error': 'Invalid request: JSON body required.'}), 400
+
+        # Validate that payload has at least some meaningful non-empty content
+        def _has_text(val):
+            if not val:
+                return False
+            if isinstance(val, str):
+                return bool(val.strip())
+            if isinstance(val, list):
+                return any(_has_text(x) for x in val)
+            if isinstance(val, dict):
+                return any(_has_text(v) for v in val.values())
+            return True
+
+        has_content = any([
+            _has_text(data.get('full_name')),
+            _has_text(data.get('summary')),
+            _has_text(data.get('skills')),
+            _has_text(data.get('experience')),
+            _has_text(data.get('education')),
+            _has_text(data.get('projects')),
+            _has_text(data.get('certifications')),
+            _has_text(data.get('achievements')),
+            _has_text(data.get('languages'))
+        ])
+        if not has_content:
+            return jsonify({'error': 'Resume data cannot be empty. Please provide at least your name or one resume section.'}), 400
+
+        template_style = str(data.get('template_style', 'modern')).lower().strip()
+        if template_style not in ['modern', 'classic']:
+            template_style = 'modern'
+
+        pdf_buffer = generate_resume_pdf(data, template_style=template_style)
+
+        # Sanitize full name for safe attachment filename
+        raw_name = str(data.get('full_name') or 'Resume').strip()
+        clean_name = re.sub(r'[^a-zA-Z0-9_\- ]', '', raw_name).strip().replace(' ', '_')
+        if not clean_name:
+            clean_name = 'Resume'
+        filename = f"{clean_name}_GOAT_Resume.pdf"
+
+        return send_file(
+            pdf_buffer,
+            as_attachment=True,
+            download_name=filename,
+            mimetype='application/pdf'
+        )
+    except Exception as e:
+        return jsonify({'error': f'Failed to generate resume PDF: {str(e)}'}), 500
 
 
 if __name__ == '__main__':
